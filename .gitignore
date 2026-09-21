@@ -1,0 +1,28 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.sqlite*
+*.db
+.pytest_cache/
+.coverage
+htmlcov/
+node_modules/
+dist/
+*.tsbuildinfo
+ai/data/raw/*
+ai/data/processed/*
+!ai/data/raw/.gitkeep
+!ai/data/processed/.gitkeep
+ai/models/*.joblib
+ai/models/*.pt
+*.log
+.DS_Store
+.idea/
+.vscode/
+# ML artifacts
+ai/models/*.pkl
+
+# Large/raw datasets
+ai/data/*.csv

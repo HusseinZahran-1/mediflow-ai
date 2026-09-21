@@ -1,0 +1,62 @@
+name: mediflow-ai
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mediflow_db}
+      POSTGRES_USER: ${POSTGRES_USER:-mediflow_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mediflow_user} -d ${POSTGRES_DB:-mediflow_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [mediflow]
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      AI_MODEL_PATH: /app/ai-models/triage_pipeline.joblib
+      AUTO_CREATE_TABLES: "false"
+    volumes:
+      - ./ai/models:/app/ai-models:ro
+      - private_uploads:/app/private_uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks: [mediflow]
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api/v1
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    networks: [mediflow]
+
+volumes:
+  postgres_data:
+  private_uploads:
+
+networks:
+  mediflow:
+    driver: bridge
