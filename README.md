@@ -531,11 +531,12 @@ Potential future development includes:
 
 ---
 
-## Author
+## Authors
 
 **Hussein Zahran**
+**SAIF KHATTAB**
 
-Artificial Intelligence Student
+Artificial Intelligence Students
 Al-Zaytoonah University of Jordan
 
 * GitHub: [HusseinZahran-1](https://github.com/HusseinZahran-1)
